@@ -1,171 +1,173 @@
 "use client";
 
-import { Button } from "@/app/components/Button";
-import { useState, useRef } from "react";
+import { Button } from "@/components/ui/Button";
+import { useRef, useState } from "react";
+import { useTheme } from "@/app/providers";
+import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
 
 export function Hero() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { theme } = useTheme();
   const [cardMousePos, setCardMousePos] = useState({ x: 0, y: 0 });
   const statsRefs = useRef<(HTMLDivElement | null)[]>([]);
   const cardRef = useRef<HTMLDivElement>(null);
+  const animationFrameRefs = useRef<(number | null)[]>([]);
+  const sectionRef = useScrollAnimation();
+  const isDark = theme === "dark";
 
-  const handleMouseMove = (
-    e: React.MouseEvent<HTMLDivElement>,
-    index: number
-  ) => {
-    const element = statsRefs.current[index];
-    if (!element) return;
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
+    // Cancel previous frame if it exists
+    if (animationFrameRefs.current[index] !== null) {
+      cancelAnimationFrame(animationFrameRefs.current[index]!);
+    }
 
-    const rect = element.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const el = statsRefs.current[index];
+    if (!el) return;
 
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = (y - centerY)/ 15;
-    const rotateY = (centerX - x) / 15;
-
-    element.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.1)`;
+    // Use requestAnimationFrame to batch transform updates
+    animationFrameRefs.current[index] = requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const rotateX = (y - rect.height / 2) / 22;
+      const rotateY = (rect.width / 2 - x) / 22;
+      el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    });
   };
 
   const handleMouseLeave = (index: number) => {
-    const element = statsRefs.current[index];
-    if (element) {
-      element.style.transform =
-        "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
+    const el = statsRefs.current[index];
+    if (el) {
+      // Cancel pending animation frame
+      if (animationFrameRefs.current[index] !== null) {
+        cancelAnimationFrame(animationFrameRefs.current[index]!);
+      }
+      el.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
     }
-    setHoveredIndex(null);
   };
 
   const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setCardMousePos({ x, y });
+    setCardMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
 
   const stats = [
     { label: "Total Experience", value: "24 months" },
-    { label: "Projects", value: "24" },
-    { label: "GitHub Stars", value: "24" },
+    { label: "Projects",         value: "24" },
+    { label: "GitHub Stars",     value: "24" },
   ];
-  return (
-    <section className="w-full flex items-center justify-center px-4 md:px-8 py-16 md:py-24 min-h-[calc(100vh-64px)] relative">
-      <div className="grid w-full max-w-7xl grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center relative z-10">
 
-        {/* LEFT CONTENT */}
+  return (
+    <section
+      ref={sectionRef}
+      className="scroll-reveal align-middle w-full flex items-center justify-center px-4 md:px-8 py-16 md:py-24 min-h-[calc(100vh-64px)] relative"
+    >
+      <div className="grid w-full max-w-[1400px] grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center relative z-10">
+
+        {/* ── LEFT CONTENT ── */}
         <div className="flex flex-col justify-center text-center lg:text-left">
-          <span
-            className="inline-block mb-6 text-xs font-bold tracking-[0.2em] uppercase bg-gradient-to-r from-[#F4581A] to-[#FF7A3D] bg-clip-text text-transparent border-l-2 border-[#F4581A] pl-3 w-fit mx-auto lg:mx-0"
-          >
+          <span className="inline-block mb-6 text-xs font-bold tracking-[0.2em] uppercase bg-gradient-to-r from-[#F4581A] to-[#FF7A3D] bg-clip-text text-transparent border-l-2 border-[#F4581A] pl-3 w-fit mx-auto lg:mx-0">
             💼 Available for hire
           </span>
 
           <h1
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black leading-tight mb-2"
-            style={{ fontFamily: "'Syne', sans-serif" }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black leading-tight mb-2 font-syne"
           >
-            <span className="text-[#1A1208]">Hi, I&apos;m </span>
+            <span className={isDark ? "text-[#F5EDE4]" : "text-[#1A1208]"}>Hi, I&apos;m </span>
             <span className="block bg-gradient-to-r from-[#F4581A] via-[#FF7A3D] to-[#D94510] bg-clip-text text-transparent">
               Rhishav
             </span>
           </h1>
 
-          <p className="mt-2 text-sm md:text-sm text-[#C4B8AD] font-medium uppercase tracking-widest">
-            Creative Developer & Builder
+          <p className={`mt-2 text-sm font-medium uppercase tracking-widest ${isDark ? "text-[#ff0000]" : "text-[#490d0d]"}`}>
+            Creative Developer &amp; Builder
           </p>
 
-          <p className="mt-8 md:mt-10 text-base sm:text-lg md:text-lg text-[#7A6A5A] leading-relaxed max-w-lg mx-auto lg:mx-0">
+          <p className={`mt-8 md:mt-10 text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 ${isDark ? "text-[#A89880]" : "text-[#3d2105]"}`}>
             I can do whatever you need, as long as I&apos;m learning something or getting paid well enough for my time — preferably both.
           </p>
 
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 sm:justify-center lg:justify-start">
-            <Button variant="primary" className="w-full sm:w-auto text-base font-bold px-8 py-3">
-              → Hire Me
-            </Button>
-            <Button variant="secondary" className="w-full sm:w-auto text-base font-bold px-8 py-3">
-              View Resume
-            </Button>
+          <div className="mt-10 flex flex-col sm:flex-row gap-5 sm:justify-center lg:justify-start">
+            <Button variant="primary"   className="w-full sm:w-auto text-base font-bold px-8 py-3">→ Hire Me</Button>
+            <Button variant="secondary" className="w-full sm:w-auto text-base font-bold px-8 py-3">View Resume</Button>
           </div>
         </div>
 
-        {/* RIGHT CARD */}
+        {/* ── RIGHT CARD ── */}
         <div className="flex justify-center lg:justify-end">
           <div
             ref={cardRef}
             onMouseMove={handleCardMouseMove}
             onMouseLeave={() => setCardMousePos({ x: 0, y: 0 })}
-            className="w-full max-w-md rounded-3xl bg-white border border-[#FFD9C2] p-8 md:p-10 space-y-6 shadow-2xl shadow-orange-200/50 relative overflow-hidden group"
+            className={`w-full max-w-md rounded-3xl p-8 md:p-10 space-y-6 relative overflow-hidden group
+              transition-[box-shadow,border-color] duration-300
+              ${isDark
+                ? "bg-[#1a1208]/60 border border-white/10 shadow-xl shadow-black/40 backdrop-blur-sm"
+                : "bg-[#FFF4EE]/60 border border-[#FFD9C2] shadow-xl"
+              }`}
           >
-            {/* Corner glow effects */}
-            <div className="absolute top-0 left-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-full blur-2xl"
+            {/* Mouse-follow glow */}
+            <div
+              className="absolute w-48 h-48 opacity-0 group-hover:opacity-100 pointer-events-none rounded-full blur-xl"
               style={{
-                background: "radial-gradient(circle, rgba(244,88,26,0.3) 0%, transparent 70%)",
-                transform: `translate(calc(${cardMousePos.x}px - 50%), calc(${cardMousePos.y}px - 50%))`
-              }}
-            />
-            <div className="absolute bottom-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-full blur-2xl"
-              style={{
-                background: "radial-gradient(circle, rgba(255,122,61,0.3) 0%, transparent 70%)",
-                transform: `translate(calc(${cardMousePos.x}px - 50%), calc(${cardMousePos.y}px - 50%))`
+                background: "radial-gradient(circle, rgba(244,88,26,0.25) 0%, transparent 70%)",
+                transform: `translate(calc(${cardMousePos.x}px - 50%), calc(${cardMousePos.y}px - 50%))`,
+                transition: "opacity 0.4s ease",
               }}
             />
 
-            {/* Decorative gradients */}
+            {/* Decorative blobs */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#F4581A] to-[#FF7A3D] rounded-full opacity-5 blur-3xl pointer-events-none" />
             <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-gradient-to-tr from-[#F4581A] to-[#FFD9C2] rounded-full opacity-5 blur-3xl pointer-events-none" />
 
-            {/* PROFILE HEADER */}
+            {/* Profile header */}
             <div className="flex items-center gap-4 relative z-10">
               <img
                 src="/logo1.png"
                 width={56}
                 height={56}
                 alt="Rhishav Lamichhane"
-                className="rounded-2xl w-16 h-16 border-3 border-[#F4581A]/20 object-cover"
+                className="rounded-2xl w-16 h-16 object-cover border-2 border-[#F4581A]/20"
               />
               <div>
-                <h2
-                  className="text-lg font-bold text-[#1A1208]"
-                  style={{ fontFamily: "'Syne', sans-serif" }}
-                >
+                <h2 className={`text-lg font-syne font-bold ${isDark ? "text-[#F5EDE4]" : "text-[#1A1208]"}`}>
                   Rhishav Lamichhane
                 </h2>
-                <p className="text-xs uppercase font-bold tracking-widest text-[#F4581A]">Quick Stats</p>
+                <p className="text-xs font-playwrite-gb-s tracking-widest text-[#F4581A] mt-0.5">Quick Stats</p>
               </div>
             </div>
 
-            {/* Divider with gradient */}
-            <div className="h-px bg-gradient-to-r from-transparent via-[#FFD9C2] to-transparent relative z-10" />
+            {/* Divider */}
+            <div className="h-px relative z-10 bg-gradient-to-r from-transparent via-[#ff6200] to-transparent"/>
 
-            {/* STATS */}
+            {/* Stats */}
             <div className="space-y-3 relative z-10">
               {stats.map(({ label, value }, index) => (
                 <div
                   key={label}
-                  ref={(el) => {
-                    statsRefs.current[index] = el;
-                  }}
-                  onMouseMove={(e) => {
-                    setHoveredIndex(index);
-                    handleMouseMove(e, index);
-                  }}
+                  ref={(el) => { statsRefs.current[index] = el; }}
+                  onMouseMove={(e) => handleMouseMove(e, index)}
                   onMouseLeave={() => handleMouseLeave(index)}
-                  className="p-4 rounded-xl bg-gradient-to-br from-[#FFF4EE] to-white border border-[#FFD9C2] hover:border-[#F4581A] hover:shadow-lg hover:shadow-orange-100 transition-all duration-100 group cursor-pointer"
-                  style={{ willChange: "transform" }}
+                  className={`stat-row p-4 rounded-xl border cursor-pointer group/stat will-change-transform
+                    ${isDark
+                      ? "bg-white/5 border-white/10 hover:border-[#F4581A] transition-[border-color,box-shadow,background-color] duration-250 hover:bg-white/10 hover:shadow-lg hover:shadow-black/30"
+                      : "bg-white/30 transition-[border-color,box-shadow,background-color] duration-250 to-white border-[#FFD9C2] hover:border-[#F4581A]"
+                    }`}
                 >
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-[#7A6A5A] font-semibold group-hover:text-[#1A1208]">{label}</span>
-                    <span className="font-black text-[#F4581A] text-lg">{value}</span>
+                    <span className={`text-sm font-dm-sans font-medium tracking-wide transition-colors duration-250 ${isDark ? "text-[#A89880] group-hover/stat:text-[#F5EDE4]" : "text-[#7A6A5A] group-hover/stat:text-[#1A1208]"}`}>
+                      {label}
+                    </span>
+                    <span className="font-jetbrains-mono font-bold text-[#F4581A] text-lg tabular-nums tracking-tight">
+                      {value}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );
