@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* ─── Custom Properties ─────────────────────────────────── */
+:root {
+  --charcoal: #1a1208;
+  --white: #f5ede4;
+}
+
 /* ─── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar { display: none; }
 * { scrollbar-width: none; }
@@ -24,4 +30,35 @@ html[data-theme="dark"] body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-syne), sans-serif;
+}
+
+/* ─── Scroll-reveal animation ───────────────────────────── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Nav underline hover ───────────────────────────────── */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #F4581A, #FF7A3D);
+  border-radius: 9999px;
+  transition: width 0.25s ease;
+}
+.nav-underline:hover::after {
+  width: 100%;
 }

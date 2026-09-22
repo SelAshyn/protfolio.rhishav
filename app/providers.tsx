@@ -40,6 +40,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     })
   }
 
+  // Avoid rendering children until theme is resolved on the client to prevent
+  // SSR/CSR hydration mismatch and the white-flash on dark-mode first load.
+  if (!mounted) {
+    return (
+      <ThemeContext.Provider value={defaultContextValue}>
+        <div style={{ visibility: "hidden" }}>{children}</div>
+      </ThemeContext.Provider>
+    );
+  }
+
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}

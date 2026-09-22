@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useTheme } from "@/app/providers";
 
 export const Navbar = () => {
@@ -8,7 +9,13 @@ export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
-  const navLinks = ["Home", "Projects", "Contact"];
+  // "Contact" links to the contact section that exists at the bottom of the home page.
+  // On project sub-pages the hash link will navigate back to home then scroll.
+  const navLinks = [
+    { label: "Home",     href: "/" },
+    { label: "Projects", href: "/#projects" },
+    { label: "Contact",  href: "/#contact" },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -37,7 +44,7 @@ export const Navbar = () => {
 
           {/* Logo + Name */}
           <div className="flex items-center gap-1">
-            <img
+            <Image
               src="/logo2.png"
               width={40}
               height={40}
@@ -57,15 +64,15 @@ export const Navbar = () => {
 
           {/* Desktop Links */}
           <div className="hidden md:flex gap-8 items-center">
-            {navLinks.map((item) => (
+            {navLinks.map(({ label, href }) => (
               <a
-                key={item}
-                href={item === "Home" ? "#" : `#${item.toLowerCase()}`}
+                key={label}
+                href={href}
                 className={`nav-underline text-[14px] font-poppins font-bold tracking-[0px] transition-colors duration-250 ${
                   isDark ? "text-[#F5EDE4] hover:text-[#F4581A]" : "text-[#1A1208] hover:text-[#F4581A]"
                 }`}
               >
-                {item}
+                {label}
               </a>
             ))}
           </div>
@@ -94,7 +101,7 @@ export const Navbar = () => {
 
             {/* Resume Button */}
             <a
-              href=""
+              href="/#contact"
               className="px-6 py-2 font-bold tracking-wide rounded-[100px] bg-gradient-to-r from-[#F4581A] to-[#FF7A3D] text-white hover:shadow-[0_0px_10px_rgba(244,88,26,0.3)] hover:shadow-orange-300 transition-all duration-100 shadow-md text-sm md:text-base hover:scale-105 active:scale-95"
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
@@ -157,20 +164,20 @@ export const Navbar = () => {
               : "bg-white/90 border border-[#FFD9C2]"
           }`}>
             <div className="flex flex-col gap-4">
-              {navLinks.map((item) => (
+              {navLinks.map(({ label, href }) => (
                 <a
-                  key={item}
-                  href={item === "Home" ? "#" : `#${item.toLowerCase()}`}
+                  key={label}
+                  href={href}
                   onClick={() => setIsOpen(false)}
                   className={`text-base font-playwrite-gb-s hover:text-[#F4581A] transition-all duration-300 relative group py-2 ${isDark ? "text-[#F5EDE4]" : "text-[#1A1208]"}`}
                 >
-                  {item}
+                  {label}
                   <span className="absolute -bottom-0.5 left-0 w-0 h-[2px] bg-gradient-to-r from-[#F4581A] to-[#FF7A3D] rounded-full transition-all duration-300 group-hover:w-full" />
                 </a>
               ))}
               <div className={`pt-4 mt-2 ${isDark ? "border-t border-white/20" : "border-t border-[#FFD9C2]"}`}>
                 <a
-                  href=""
+                  href="/#contact"
                   onClick={() => setIsOpen(false)}
                   className="block px-6 py-3 font-bold tracking-wide rounded-xl bg-gradient-to-r from-[#F4581A] to-[#FF7A3D] text-white text-center hover:shadow-lg hover:shadow-orange-300 transition-all duration-300 shadow-md text-base"
                   style={{ fontFamily: "'Syne', sans-serif" }}

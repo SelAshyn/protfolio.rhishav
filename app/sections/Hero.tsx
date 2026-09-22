@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/Button";
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { useTheme } from "@/app/providers";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
 
@@ -88,8 +89,12 @@ export function Hero() {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row gap-5 sm:justify-center lg:justify-start">
-            <Button variant="primary"   className="w-full sm:w-auto text-base font-bold px-8 py-3">→ Hire Me</Button>
-            <Button variant="secondary" className="w-full sm:w-auto text-base font-bold px-8 py-3">View Resume</Button>
+            <a href="#contact" className="w-full sm:w-auto">
+              <Button variant="primary" className="w-full text-base font-bold px-8 py-3">→ Hire Me</Button>
+            </a>
+            <a href="#contact" className="w-full sm:w-auto">
+              <Button variant="secondary" className="w-full text-base font-bold px-8 py-3">View Resume</Button>
+            </a>
           </div>
         </div>
 
@@ -122,10 +127,10 @@ export function Hero() {
 
             {/* Profile header */}
             <div className="flex items-center gap-4 relative z-10">
-              <img
+              <Image
                 src="/logo1.png"
-                width={56}
-                height={56}
+                width={64}
+                height={64}
                 alt="Rhishav Lamichhane"
                 className="rounded-2xl w-16 h-16 object-cover border-2 border-[#F4581A]/20"
               />
