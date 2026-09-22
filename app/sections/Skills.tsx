@@ -30,9 +30,9 @@ const Skills = () => {
   const isDark = theme === 'dark';
 
   return (
-    <div className={`scroll-reveal w-full flex flex-col align-middle items-center justify-center px-4 md:px-8 py-16 md:py-24 min-h-[calc(100vh-64px)] relative`}>
+    <div className={`scroll-reveal w-full flex flex-col align-middle items-center justify-center px-4 md:px-8 py-16 mt-20 md:py-24 min-h-[calc(100vh-64px)] relative`}>
       <div className={`max-w-7xl text-center ${isDark ? 'text-white' : 'text-gray-900'}`}>
-        <h1 className={`text-5xl font-bold ${isDark ? 'text-orange-600' : 'text-orange-500'}`}>Skills</h1>
+        <h1 className={`text-5xl font-bold ${isDark ? 'text-orange-600' : 'text-orange-400'}`}>Skills</h1>
         <div>
           <p className={`text-sm mt-4 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Here are some of the technologies and tools I have experience with:</p>
           <div className='mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-14 justify-center'>

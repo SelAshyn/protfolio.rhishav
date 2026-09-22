@@ -54,11 +54,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}
       >
         <ThemeProvider>
-          {/* Background blobs — isolated on their own GPU layer */}
-          <div className="fixed top-0 -left-40 w-80 h-80 bg-orange-400 rounded-full blur-3xl opacity-20 animate-blob pointer-events-none translate-z-0" />
-          <div className="fixed top-40 -right-40 w-80 h-80 bg-orange-300 rounded-full blur-3xl opacity-20 animate-blob animation-delay-2000 pointer-events-none translate-z-0" />
-          <div className="fixed -bottom-8 left-20 w-80 h-80 bg-orange-500 rounded-full blur-3xl opacity-15 animate-blob animation-delay-4000 pointer-events-none translate-z-0" />
-
           {children}
         </ThemeProvider>
       </body>
